@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nina Bot – Sales Tech Builder</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #f9f8f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 16px;
+  }
+
+  .chat-wrapper {
+    width: 100%;
+    max-width: 680px;
+    height: 90vh;
+    max-height: 780px;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e4e1db;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 4px 32px rgba(50, 106, 179, 0.08);
+  }
+
+  /* Header */
+  .header {
+    background: #326ab3;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .header-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #85d0cd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .header-text .name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.01em;
+  }
+
+  .header-text .tagline {
+    font-size: 12px;
+    color: rgba(255,255,255,0.65);
+    margin-top: 2px;
+    font-style: italic;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #85d0cd;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* Messages */
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+  }
+
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-thumb { background: #e4e1db; border-radius: 2px; }
+
+  .msg-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .msg-row.user { align-items: flex-end; }
+  .msg-row.bot  { align-items: flex-start; }
+
+  .bubble {
+    max-width: 82%;
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.75;
+    border-radius: 4px 18px 18px 18px;
+  }
+
+  .bubble.bot {
+    background: #f0fafa;
+    border: 1px solid #b0dfdd;
+    color: #1a1a2e;
+    border-radius: 4px 18px 18px 18px;
+  }
+
+  .bubble.user {
+    background: #326ab3;
+    color: #fff;
+    border-radius: 18px 18px 4px 18px;
+  }
+
+  .bubble ul {
+    padding-left: 18px;
+    margin: 6px 0;
+    list-style-type: disc;
+  }
+
+  .bubble ul li {
+    margin-bottom: 5px;
+  }
+
+  .bubble strong {
+    font-weight: 600;
+    color: #326ab3;
+  }
+
+  .bubble.user strong {
+    color: #fff;
+  }
+
+  /* Quick reply buttons */
+  .quick-replies {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .qr-btn {
+    padding: 8px 18px;
+    font-size: 13px;
+    font-family: Georgia, serif;
+    border: 1.5px solid #85d0cd;
+    border-radius: 100px;
+    background: #fff;
+    color: #326ab3;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .qr-btn:hover {
+    background: #85d0cd;
+    color: #fff;
+    border-color: #85d0cd;
+  }
+
+  /* Typing indicator */
+  .typing {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 14px 16px;
+    background: #f0fafa;
+    border: 1px solid #b0dfdd;
+    border-radius: 4px 18px 18px 18px;
+    width: fit-content;
+  }
+
+  .typing span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #85d0cd;
+    animation: bounce 1.2s ease infinite;
+  }
+
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+    40% { transform: translateY(-6px); opacity: 1; }
+  }
+
+  /* Input area */
+  .input-area {
+    padding: 14px 16px;
+    border-top: 1px solid #e4e1db;
+    background: #fff;
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  textarea {
+    flex: 1;
+    resize: none;
+    font-size: 14px;
+    font-family: Georgia, serif;
+    padding: 10px 14px;
+    border: 1.5px solid #d4cfc8;
+    border-radius: 20px;
+    outline: none;
+    line-height: 1.5;
+    min-height: 42px;
+    max-height: 120px;
+    background: #f9f8f6;
+    color: #1a1a2e;
+    transition: border-color 0.15s;
+  }
+
+  textarea:focus { border-color: #85d0cd; }
+
+  .send-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: #326ab3;
+    color: #fff;
+    font-size: 17px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .send-btn:hover { background: #85d0cd; }
+  .send-btn:disabled { background: #d4cfc8; cursor: not-allowed; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 8px;
+    font-size: 11px;
+    color: #b0a99a;
+    letter-spacing: 0.05em;
+    border-top: 1px solid #f0ede8;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 0; align-items: flex-end; }
+    .chat-wrapper { border-radius: 16px 16px 0 0; height: 95vh; max-height: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="chat-wrapper">
+  <div class="header">
+    <div class="header-avatar">N</div>
+    <div class="header-text">
+      <div class="name">Nina Bot</div>
+      <div class="tagline">Sales Tech Builder · by Nina Mistry</div>
+    </div>
+    <div class="status-dot"></div>
+  </div>
+
+  <div class="messages" id="messages"></div>
+
+  <div class="input-area">
+    <textarea id="input" placeholder="Type here…" rows="1"></textarea>
+    <button class="send-btn" id="sendBtn" disabled>↑</button>
+  </div>
+
+  <div class="footer">Nina Mistry · Tech that gets you clients</div>
+</div>
+
+<script>
+  const WELCOME = "Hey — you're in the right place 💛\n\nAre you creating a free or paid event or offer to sell from?";
+
+  let history = [];
+  let buttonsUsed = false;
+  let loading = false;
+
+  const messagesEl = document.getElementById("messages");
+  const inputEl    = document.getElementById("input");
+  const sendBtn    = document.getElementById("sendBtn");
+
+  function renderMarkdown(text) {
+    const lines = text.split("\n");
+    let html = "";
+    let inList = false;
+
+    for (let line of lines) {
+      const isBullet = /^[-*] /.test(line.trim());
+
+      if (isBullet) {
+        if (!inList) { html += "<ul>"; inList = true; }
+        html += "<li>" + inlineFormat(line.trim().replace(/^[-*] /, "")) + "</li>";
+      } else {
+        if (inList) { html += "</ul>"; inList = false; }
+        if (line.trim() === "") {
+          html += "<div style='height:6px'></div>";
+        } else {
+          html += "<div>" + inlineFormat(line) + "</div>";
+        }
+      }
+    }
+    if (inList) html += "</ul>";
+    return html;
+  }
+
+  function inlineFormat(text) {
+    return text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+  }
+
+  function addMessage(role, text, showButtons = false) {
+    const row = document.createElement("div");
+    row.className = "msg-row " + role;
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble " + role;
+
+    if (role === "user") {
+      bubble.textContent = text;
+    } else {
+      bubble.innerHTML = renderMarkdown(text);
+    }
+
+    row.appendChild(bubble);
+
+    if (showButtons && !buttonsUsed) {
+      const qr = document.createElement("div");
+      qr.className = "quick-replies";
+      qr.id = "quick-replies";
+      ["Free", "Paid", "Not sure yet"].forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "qr-btn";
+        btn.textContent = opt;
+        btn.onclick = () => handleQuickReply(opt);
+        qr.appendChild(btn);
+      });
+      row.appendChild(qr);
+    }
+
+    messagesEl.appendChild(row);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    return row;
+  }
+
+  function addTyping() {
+    const row = document.createElement("div");
+    row.className = "msg-row bot";
+    row.id = "typing-row";
+    row.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+    messagesEl.appendChild(row);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function removeTyping() {
+    const t = document.getElementById("typing-row");
+    if (t) t.remove();
+  }
+
+  async function callBot(userText) {
+    if (loading) return;
+    loading = true;
+    sendBtn.disabled = true;
+
+    history.push({ role: "user", content: userText });
+    addTyping();
+
+    try {
+      const res = await fetch("/.netlify/functions/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: history }),
+      });
+      const data = await res.json();
+      const reply = data.reply || "Something went wrong — try again 💛";
+      removeTyping();
+      history.push({ role: "assistant", content: reply });
+      addMessage("bot", reply);
+    } catch {
+      removeTyping();
+      addMessage("bot", "Something went wrong — try again 💛");
+    }
+
+    loading = false;
+    sendBtn.disabled = !inputEl.value.trim();
+  }
+
+  function handleQuickReply(choice) {
+    if (buttonsUsed) return;
+    buttonsUsed = true;
+    const qr = document.getElementById("quick-replies");
+    if (qr) qr.remove();
+    history = [{ role: "assistant", content: WELCOME }];
+    addMessage("user", choice);
+    callBot(choice);
+  }
+
+  function send() {
+    const text = inputEl.value.trim();
+    if (!text || loading) return;
+    inputEl.value = "";
+    inputEl.style.height = "auto";
+    sendBtn.disabled = true;
+    addMessage("user", text);
+    callBot(text);
+  }
+
+  inputEl.addEventListener("input", function () {
+    this.style.height = "auto";
+    this.style.height = Math.min(this.scrollHeight, 120) + "px";
+    sendBtn.disabled = !this.value.trim() || loading;
+  });
+
+  inputEl.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
+  });
+
+  sendBtn.addEventListener("click", send);
+
+  // Show welcome message on load
+  history = [{ role: "assistant", content: WELCOME }];
+  addMessage("bot", WELCOME, true);
+</script>
+</body>
+</html>
