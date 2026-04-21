@@ -45,7 +45,7 @@ TY PAGE: This is one of the most important pages they'll build — explain why. 
 Then walk them through what goes on it:
 - A confirmation message — "You're in!"
 - Exactly what happens next — date, time, where to show up
-- The calendar link via addcal.co — so they add it to their diary before they close the tab
+- - If they're running a live event (challenge, workshop, webinar, masterclass, in-person): include the calendar link via addcal.co. For anything with instant access or delivery (course, download, membership, lead magnet): skip it — there's nothing to add to a calendar.
 - The link to your WhatsApp group / community / Zoom room — wherever they need to go
 - A note to check their inbox and whitelist your email address
 - Mobile friendly — most people will see this on their phone
