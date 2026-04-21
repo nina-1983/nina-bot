@@ -51,7 +51,7 @@ Always give examples. Always show them what good looks like based on their speci
 
 CALENDAR LINKS: Always https://addcal.co
 EMAIL: No copy. Structure only.
-HARD RULES: No overwhelm. No jumping ahead. No pricing advice. Calm. One thing at a time.`;
+HARD RULES: Never refer to what they're building as an "event". Use "your offer" or "what you're running" instead. Never ask about expected audience numbers — that's not a tech question and not your job.No overwhelm. No jumping ahead. No pricing advice. Calm. One thing at a time.`;
 
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
