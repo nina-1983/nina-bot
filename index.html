@@ -268,6 +268,7 @@
       <div class="tagline">Sales Tech Builder · by Nina Mistry</div>
     </div>
     <div class="status-dot"></div>
+    <button onclick="resetChat()" style="margin-left:12px;background:none;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);font-size:11px;padding:4px 10px;border-radius:100px;cursor:pointer;font-family:Georgia,serif;letter-spacing:0.03em;">Start again</button>
   </div>
 
   <div class="messages" id="messages"></div>
@@ -433,6 +434,13 @@
   // Show welcome message on load
   history = [{ role: "assistant", content: WELCOME }];
   addMessage("bot", WELCOME, true);
+ function resetChat() {
+    history = [];
+    buttonsUsed = false;
+    messagesEl.innerHTML = "";
+    history = [{ role: "assistant", content: WELCOME }];
+    addMessage("bot", WELCOME, true);
+}
 </script>
 </body>
 </html>
