@@ -25,16 +25,16 @@
     max-height: 780px;
     background: #fff;
     border-radius: 16px;
-    border: 1px solid #e4e1db;
+    border: 1px solid #f6c4c7;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 4px 32px rgba(50, 106, 179, 0.08);
+    box-shadow: 0 4px 32px rgba(232, 48, 79, 0.08);
   }
 
   /* Header */
   .header {
-    background: #326ab3;
+    background: #e8304f;
     padding: 18px 24px;
     display: flex;
     align-items: center;
@@ -45,13 +45,10 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: #85d0cd;
+    background: rgba(255,255,255,0.15);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
-    font-weight: 600;
-    color: #fff;
     flex-shrink: 0;
   }
 
@@ -64,7 +61,7 @@
 
   .header-text .tagline {
     font-size: 12px;
-    color: rgba(255,255,255,0.65);
+    color: rgba(255,255,255,0.75);
     margin-top: 2px;
     font-style: italic;
   }
@@ -90,7 +87,7 @@
   }
 
   .messages::-webkit-scrollbar { width: 4px; }
-  .messages::-webkit-scrollbar-thumb { background: #e4e1db; border-radius: 2px; }
+  .messages::-webkit-scrollbar-thumb { background: #f6c4c7; border-radius: 2px; }
 
   .msg-row {
     display: flex;
@@ -110,14 +107,14 @@
   }
 
   .bubble.bot {
-    background: #f0fafa;
-    border: 1px solid #b0dfdd;
+    background: #fdf0f1;
+    border: 1px solid #f6c4c7;
     color: #1a1a2e;
     border-radius: 4px 18px 18px 18px;
   }
 
   .bubble.user {
-    background: #326ab3;
+    background: #e8304f;
     color: #fff;
     border-radius: 18px 18px 4px 18px;
   }
@@ -134,7 +131,7 @@
 
   .bubble strong {
     font-weight: 600;
-    color: #326ab3;
+    color: #e8304f;
   }
 
   .bubble.user strong {
@@ -156,7 +153,7 @@
     border: 1.5px solid #85d0cd;
     border-radius: 100px;
     background: #fff;
-    color: #326ab3;
+    color: #e8304f;
     cursor: pointer;
     transition: all 0.15s;
   }
@@ -173,8 +170,8 @@
     align-items: center;
     gap: 5px;
     padding: 14px 16px;
-    background: #f0fafa;
-    border: 1px solid #b0dfdd;
+    background: #fdf0f1;
+    border: 1px solid #f6c4c7;
     border-radius: 4px 18px 18px 18px;
     width: fit-content;
   }
@@ -198,7 +195,7 @@
   /* Input area */
   .input-area {
     padding: 14px 16px;
-    border-top: 1px solid #e4e1db;
+    border-top: 1px solid #f6c4c7;
     background: #fff;
     display: flex;
     gap: 10px;
@@ -211,7 +208,7 @@
     font-size: 14px;
     font-family: 'Montserrat', sans-serif;
     padding: 10px 14px;
-    border: 1.5px solid #d4cfc8;
+    border: 1.5px solid #f6c4c7;
     border-radius: 20px;
     outline: none;
     line-height: 1.5;
@@ -229,7 +226,7 @@
     height: 42px;
     border-radius: 50%;
     border: none;
-    background: #326ab3;
+    background: #e8304f;
     color: #fff;
     font-size: 17px;
     cursor: pointer;
@@ -241,7 +238,7 @@
   }
 
   .send-btn:hover { background: #85d0cd; }
-  .send-btn:disabled { background: #d4cfc8; cursor: not-allowed; }
+  .send-btn:disabled { background: #f6c4c7; cursor: not-allowed; }
 
   /* Footer */
   .footer {
@@ -250,7 +247,7 @@
     font-size: 11px;
     color: #b0a99a;
     letter-spacing: 0.05em;
-    border-top: 1px solid #f0ede8;
+    border-top: 1px solid #f6c4c7;
   }
 
   @media (max-width: 480px) {
@@ -263,7 +260,7 @@
 
 <div class="chat-wrapper">
   <div class="header">
-    <div class="header-avatar">N</div>
+    <div class="header-avatar"><svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11 18.5C11 18.5 1.5 12.5 1.5 6.5C1.5 4.01 3.51 2 6 2C7.99 2 9.68 3.18 10.5 4.87C10.67 5.22 11.33 5.22 11.5 4.87C12.32 3.18 14.01 2 16 2C18.49 2 20.5 4.01 20.5 6.5C20.5 12.5 11 18.5 11 18.5Z" fill="#f6c4c7"/></svg></div>
     <div class="header-text">
       <div class="name">Nina Bot</div>
       <div class="tagline">Sales Tech Builder · by Nina Mistry</div>
@@ -435,13 +432,14 @@
   // Show welcome message on load
   history = [{ role: "assistant", content: WELCOME }];
   addMessage("bot", WELCOME, true);
- function resetChat() {
+
+  function resetChat() {
     history = [];
     buttonsUsed = false;
     messagesEl.innerHTML = "";
     history = [{ role: "assistant", content: WELCOME }];
     addMessage("bot", WELCOME, true);
-}
+  }
 </script>
 </body>
 </html>
