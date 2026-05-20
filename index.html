@@ -18,7 +18,7 @@
     padding: 0;
   }
 
- .chat-wrapper {
+  .chat-wrapper {
     width: 100%;
     max-width: 680px;
     height: 100vh;
@@ -74,6 +74,37 @@
     flex-shrink: 0;
   }
 
+  .header-actions {
+    display: flex;
+    gap: 6px;
+    margin-left: 12px;
+  }
+
+  .header-btn {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.7);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.03em;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .header-btn:hover {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+  }
+
+  .header-btn.saved {
+    background: rgba(133,208,205,0.3);
+    border-color: #85d0cd;
+    color: #fff;
+  }
+
   /* Messages */
   .messages {
     flex: 1;
@@ -124,18 +155,14 @@
     list-style-type: disc;
   }
 
-  .bubble ul li {
-    margin-bottom: 5px;
-  }
+  .bubble ul li { margin-bottom: 5px; }
 
   .bubble strong {
     font-weight: 600;
     color: #e8304f;
   }
 
-  .bubble.user strong {
-    color: #fff;
-  }
+  .bubble.user strong { color: #fff; }
 
   /* Quick reply buttons */
   .quick-replies {
@@ -239,6 +266,58 @@
   .send-btn:hover { background: #85d0cd; }
   .send-btn:disabled { background: #f6c4c7; cursor: not-allowed; }
 
+  /* Voice button */
+  .voice-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1.5px solid #f6c4c7;
+    background: #fff;
+    color: #e8304f;
+    font-size: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .voice-btn:hover { border-color: #85d0cd; color: #85d0cd; }
+
+  .voice-btn.listening {
+    background: #e8304f;
+    border-color: #e8304f;
+    color: #fff;
+    animation: pulse 1s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(232,48,79,0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(232,48,79,0); }
+  }
+
+  /* Save toast */
+  .toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a2e;
+    color: #fff;
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+    padding: 8px 16px;
+    border-radius: 100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 100;
+  }
+
+  .toast.show { opacity: 1; }
+
   /* Footer */
   .footer {
     text-align: center;
@@ -259,36 +338,57 @@
 
 <div class="chat-wrapper">
   <div class="header">
-    <div class="header-avatar"><svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11 18.5C11 18.5 1.5 12.5 1.5 6.5C1.5 4.01 3.51 2 6 2C7.99 2 9.68 3.18 10.5 4.87C10.67 5.22 11.33 5.22 11.5 4.87C12.32 3.18 14.01 2 16 2C18.49 2 20.5 4.01 20.5 6.5C20.5 12.5 11 18.5 11 18.5Z" fill="#f6c4c7"/></svg></div>
+    <div class="header-avatar">
+      <svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 18.5C11 18.5 1.5 12.5 1.5 6.5C1.5 4.01 3.51 2 6 2C7.99 2 9.68 3.18 10.5 4.87C10.67 5.22 11.33 5.22 11.5 4.87C12.32 3.18 14.01 2 16 2C18.49 2 20.5 4.01 20.5 6.5C20.5 12.5 11 18.5 11 18.5Z" fill="#f6c4c7"/>
+      </svg>
+    </div>
     <div class="header-text">
       <div class="name">Ask Nina</div>
       <div class="tagline">Tech made simple, sales made easy</div>
     </div>
     <div class="status-dot"></div>
-    <button onclick="resetChat()" style="margin-left:12px;background:none;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);font-size:11px;padding:4px 10px;border-radius:100px;cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:0.03em;">Start again</button>
+    <div class="header-actions">
+      <button class="header-btn" id="saveBtn" onclick="saveChat()">Save</button>
+      <button class="header-btn" onclick="resetChat()">Start again</button>
+    </div>
   </div>
 
   <div class="messages" id="messages"></div>
 
   <div class="input-area">
     <textarea id="input" placeholder="Chat to Nina…" rows="1"></textarea>
+    <button class="voice-btn" id="voiceBtn" title="Speak your message">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="2" width="6" height="12" rx="3"/>
+        <path d="M5 10a7 7 0 0 0 14 0"/>
+        <line x1="12" y1="19" x2="12" y2="23"/>
+        <line x1="8" y1="23" x2="16" y2="23"/>
+      </svg>
+    </button>
     <button class="send-btn" id="sendBtn" disabled>↑</button>
   </div>
 
   <div class="footer">Nina Mistry · making tech simple</div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-const WELCOME = "Hey, so what's our plan? What are we going with? Free, paid, or are you not sure yet? 💛"; 
-  
- let history = [];
+  const STORAGE_KEY = "askNinaChat_v1";
+  const WELCOME = "Hey, so what's our plan? What are we going with? Free, paid, or are you not sure yet? 💛";
+
+  let history = [];
   let buttonsUsed = false;
   let loading = false;
 
   const messagesEl = document.getElementById("messages");
   const inputEl    = document.getElementById("input");
   const sendBtn    = document.getElementById("sendBtn");
+  const voiceBtn   = document.getElementById("voiceBtn");
+  const saveBtn    = document.getElementById("saveBtn");
 
+  // ── Markdown renderer ──────────────────────────────────────────
   function renderMarkdown(text) {
     const lines = text.split("\n");
     let html = "";
@@ -296,7 +396,6 @@ const WELCOME = "Hey, so what's our plan? What are we going with? Free, paid, or
 
     for (let line of lines) {
       const isBullet = /^[-*] /.test(line.trim());
-
       if (isBullet) {
         if (!inList) { html += "<ul>"; inList = true; }
         html += "<li>" + inlineFormat(line.trim().replace(/^[-*] /, "")) + "</li>";
@@ -317,6 +416,7 @@ const WELCOME = "Hey, so what's our plan? What are we going with? Free, paid, or
     return text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
   }
 
+  // ── Render messages ────────────────────────────────────────────
   function addMessage(role, text, showButtons = false) {
     const row = document.createElement("div");
     row.className = "msg-row " + role;
@@ -365,6 +465,55 @@ const WELCOME = "Hey, so what's our plan? What are we going with? Free, paid, or
     if (t) t.remove();
   }
 
+  // ── Toast ──────────────────────────────────────────────────────
+  function showToast(msg) {
+    const toast = document.getElementById("toast");
+    toast.textContent = msg;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2200);
+  }
+
+  // ── localStorage ───────────────────────────────────────────────
+  function saveChat() {
+    if (history.length <= 1) {
+      showToast("Nothing to save yet 💛");
+      return;
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ history, buttonsUsed }));
+      saveBtn.classList.add("saved");
+      saveBtn.textContent = "Saved ✓";
+      showToast("Progress saved 💛");
+      setTimeout(() => {
+        saveBtn.classList.remove("saved");
+        saveBtn.textContent = "Save";
+      }, 2500);
+    } catch {
+      showToast("Couldn't save — try again");
+    }
+  }
+
+  function loadSaved() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      const saved = JSON.parse(raw);
+      if (!saved.history || saved.history.length <= 1) return false;
+      history = saved.history;
+      buttonsUsed = saved.buttonsUsed || true;
+      // Replay messages into UI (skip first assistant welcome — render it with buttons if needed)
+      history.forEach((msg, i) => {
+        const showBtns = i === 0 && !buttonsUsed;
+        addMessage(msg.role === "assistant" ? "bot" : "user", msg.content, showBtns);
+      });
+      showToast("Welcome back — picked up where you left off 💛");
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  // ── API call ───────────────────────────────────────────────────
   async function callBot(userText) {
     if (loading) return;
     loading = true;
@@ -413,6 +562,59 @@ const WELCOME = "Hey, so what's our plan? What are we going with? Free, paid, or
     callBot(text);
   }
 
+  // ── Reset ──────────────────────────────────────────────────────
+  function resetChat() {
+    localStorage.removeItem(STORAGE_KEY);
+    history = [];
+    buttonsUsed = false;
+    messagesEl.innerHTML = "";
+    history = [{ role: "assistant", content: WELCOME }];
+    addMessage("bot", WELCOME, true);
+  }
+
+  // ── Voice input ────────────────────────────────────────────────
+  let recognition = null;
+  let isListening = false;
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = "en-GB";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      inputEl.value = transcript;
+      inputEl.dispatchEvent(new Event("input"));
+    };
+
+    recognition.onend = () => {
+      isListening = false;
+      voiceBtn.classList.remove("listening");
+    };
+
+    recognition.onerror = () => {
+      isListening = false;
+      voiceBtn.classList.remove("listening");
+      showToast("Couldn't catch that — try again");
+    };
+
+    voiceBtn.addEventListener("click", () => {
+      if (isListening) {
+        recognition.stop();
+      } else {
+        isListening = true;
+        voiceBtn.classList.add("listening");
+        recognition.start();
+      }
+    });
+  } else {
+    voiceBtn.style.display = "none";
+  }
+
+  // ── Input handlers ─────────────────────────────────────────────
   inputEl.addEventListener("input", function () {
     this.style.height = "auto";
     this.style.height = Math.min(this.scrollHeight, 120) + "px";
@@ -428,14 +630,9 @@ const WELCOME = "Hey, so what's our plan? What are we going with? Free, paid, or
 
   sendBtn.addEventListener("click", send);
 
-  // Show welcome message on load
-  history = [{ role: "assistant", content: WELCOME }];
-  addMessage("bot", WELCOME, true);
-
-  function resetChat() {
-    history = [];
-    buttonsUsed = false;
-    messagesEl.innerHTML = "";
+  // ── Init ───────────────────────────────────────────────────────
+  const restored = loadSaved();
+  if (!restored) {
     history = [{ role: "assistant", content: WELCOME }];
     addMessage("bot", WELCOME, true);
   }
