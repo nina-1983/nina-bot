@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ask Nina</title>
+<title>Nina Bot – Your launch tech, sorted</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,7 +31,6 @@
     box-shadow: 0 4px 32px rgba(232, 48, 79, 0.08);
   }
 
-  /* Header */
   .header {
     background: #e8304f;
     padding: 18px 24px;
@@ -105,7 +104,6 @@
     color: #fff;
   }
 
-  /* Messages */
   .messages {
     flex: 1;
     overflow-y: auto;
@@ -164,7 +162,6 @@
 
   .bubble.user strong { color: #fff; }
 
-  /* Quick reply buttons */
   .quick-replies {
     display: flex;
     gap: 8px;
@@ -190,7 +187,6 @@
     border-color: #85d0cd;
   }
 
-  /* Typing indicator */
   .typing {
     display: flex;
     align-items: center;
@@ -218,7 +214,6 @@
     40% { transform: translateY(-6px); opacity: 1; }
   }
 
-  /* Input area */
   .input-area {
     padding: 14px 16px;
     border-top: 1px solid #f6c4c7;
@@ -266,7 +261,6 @@
   .send-btn:hover { background: #85d0cd; }
   .send-btn:disabled { background: #f6c4c7; cursor: not-allowed; }
 
-  /* Voice button */
   .voice-btn {
     width: 42px;
     height: 42px;
@@ -297,7 +291,6 @@
     50% { box-shadow: 0 0 0 8px rgba(232,48,79,0); }
   }
 
-  /* Save toast */
   .toast {
     position: fixed;
     bottom: 80px;
@@ -328,7 +321,6 @@
     border-top: 1px solid #f6c4c7;
   }
 
-  /* Footer */
   .footer {
     text-align: center;
     padding: 8px;
@@ -354,8 +346,8 @@
       </svg>
     </div>
     <div class="header-text">
-      <div class="name">Ask Nina</div>
-      <div class="tagline">Tech made simple, sales made easy</div>
+      <div class="name">Nina Bot</div>
+      <div class="tagline">Your launch tech, sorted</div>
     </div>
     <div class="status-dot"></div>
     <div class="header-actions">
@@ -383,14 +375,14 @@
     Your progress saves to this browser only. Return here on the same device to pick up where you left off.<br>
     Prefer to talk? Hit the 🎤 and chat to me by voice note.
   </div>
-  <div class="footer">Nina Mistry · making tech simple</div>
+  <div class="footer">Nina Mistry · your launch tech, sorted</div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-  const STORAGE_KEY = "askNinaChat_v1";
-  const WELCOME = "Hey, so what's our plan? What are we going with? Free, paid, or are you not sure yet? 💛";
+  const STORAGE_KEY = "ninaBotChat_v1";
+  const WELCOME = "Hey! Right, let's get your tech sorted.\n\nTell me what you're working on and we'll make sure everything is set up properly and actually works.";
 
   let history = [];
   let buttonsUsed = false;
@@ -402,7 +394,6 @@
   const voiceBtn   = document.getElementById("voiceBtn");
   const saveBtn    = document.getElementById("saveBtn");
 
-  // ── Markdown renderer ──────────────────────────────────────────
   function renderMarkdown(text) {
     const lines = text.split("\n");
     let html = "";
@@ -430,7 +421,6 @@
     return text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
   }
 
-  // ── Render messages ────────────────────────────────────────────
   function addMessage(role, text, showButtons = false) {
     const row = document.createElement("div");
     row.className = "msg-row " + role;
@@ -450,7 +440,7 @@
       const qr = document.createElement("div");
       qr.className = "quick-replies";
       qr.id = "quick-replies";
-      ["Free", "Paid", "Not sure yet"].forEach(opt => {
+      ["I'm building from scratch", "Something's broken", "I'm about to go live", "I need to test everything"].forEach(opt => {
         const btn = document.createElement("button");
         btn.className = "qr-btn";
         btn.textContent = opt;
@@ -479,7 +469,6 @@
     if (t) t.remove();
   }
 
-  // ── Toast ──────────────────────────────────────────────────────
   function showToast(msg) {
     const toast = document.getElementById("toast");
     toast.textContent = msg;
@@ -487,17 +476,16 @@
     setTimeout(() => toast.classList.remove("show"), 2200);
   }
 
-  // ── localStorage ───────────────────────────────────────────────
   function saveChat() {
     if (history.length <= 1) {
-      showToast("Nothing to save yet 💛");
+      showToast("Nothing to save yet");
       return;
     }
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ history, buttonsUsed }));
       saveBtn.classList.add("saved");
       saveBtn.textContent = "Saved ✓";
-      showToast("Progress saved 💛");
+      showToast("Progress saved");
       setTimeout(() => {
         saveBtn.classList.remove("saved");
         saveBtn.textContent = "Save";
@@ -515,19 +503,17 @@
       if (!saved.history || saved.history.length <= 1) return false;
       history = saved.history;
       buttonsUsed = saved.buttonsUsed || true;
-      // Replay messages into UI (skip first assistant welcome — render it with buttons if needed)
       history.forEach((msg, i) => {
         const showBtns = i === 0 && !buttonsUsed;
         addMessage(msg.role === "assistant" ? "bot" : "user", msg.content, showBtns);
       });
-      showToast("Welcome back — picked up where you left off 💛");
+      showToast("Welcome back — picked up where you left off");
       return true;
     } catch {
       return false;
     }
   }
 
-  // ── API call ───────────────────────────────────────────────────
   async function callBot(userText) {
     if (loading) return;
     loading = true;
@@ -543,13 +529,13 @@
         body: JSON.stringify({ messages: history }),
       });
       const data = await res.json();
-      const reply = data.reply || "Something went wrong — try again 💛";
+      const reply = data.reply || "Something went wrong — try again";
       removeTyping();
       history.push({ role: "assistant", content: reply });
       addMessage("bot", reply);
     } catch {
       removeTyping();
-      addMessage("bot", "Something went wrong — try again 💛");
+      addMessage("bot", "Something went wrong — try again");
     }
 
     loading = false;
@@ -576,7 +562,6 @@
     callBot(text);
   }
 
-  // ── Reset ──────────────────────────────────────────────────────
   function resetChat() {
     localStorage.removeItem(STORAGE_KEY);
     history = [];
@@ -586,7 +571,6 @@
     addMessage("bot", WELCOME, true);
   }
 
-  // ── Voice input ────────────────────────────────────────────────
   let recognition = null;
   let isListening = false;
 
@@ -628,7 +612,6 @@
     voiceBtn.style.display = "none";
   }
 
-  // ── Input handlers ─────────────────────────────────────────────
   inputEl.addEventListener("input", function () {
     this.style.height = "auto";
     this.style.height = Math.min(this.scrollHeight, 120) + "px";
@@ -644,7 +627,6 @@
 
   sendBtn.addEventListener("click", send);
 
-  // ── Init ───────────────────────────────────────────────────────
   const restored = loadSaved();
   if (!restored) {
     history = [{ role: "assistant", content: WELCOME }];
